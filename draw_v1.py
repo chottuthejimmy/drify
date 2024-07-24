@@ -16,7 +16,7 @@ frame_height, frame_width = frame.shape[:2]
 
 # Create a blank canvas
 canvas = np.ones((frame_height, frame_width, 3), np.uint8) * 255
-
+    
 # Previous coordinates of the index finger
 prev_x, prev_y = 0, 0
 
