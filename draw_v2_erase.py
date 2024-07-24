@@ -8,7 +8,7 @@ mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(static_image_mode=False, max_num_hands=1, min_detection_confidence=0.5)
 
 # Initialize the webcam
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 # Get the frame dimensions
 ret, frame = cap.read()
@@ -28,15 +28,15 @@ y_buffer = deque(maxlen=5)
 points = []
 
 def is_fist(hand_landmarks):
-    thumb_tip = hand_landmarks.landmark[4]
     index_tip = hand_landmarks.landmark[8]
-    middle_tip = hand_landmarks.landmark[12]
-    ring_tip = hand_landmarks.landmark[16]
-    pinky_tip = hand_landmarks.landmark[20]
+    thumb_base = hand_landmarks.landmark[2]
     
-    if (thumb_tip.y < index_tip.y and thumb_tip.y < middle_tip.y and 
-        thumb_tip.y < ring_tip.y and thumb_tip.y < pinky_tip.y):
+    # Calculate the Euclidean distance between the index finger tip and thumb base
+    distance = np.sqrt((index_tip.x - thumb_base.x) ** 2 + (index_tip.y - thumb_base.y) ** 2)
+    
+    if distance < 0.05:
         return True
+    
     return False
 
 while True:
@@ -79,7 +79,7 @@ while True:
                 points.append([smooth_x, smooth_y])
 
                 # If we have enough points, draw a curve
-                if len(points) > 3:
+                if len(points) > 2:
                     # Convert points to numpy array
                     points_array = np.array(points, dtype=np.int32)
 
@@ -93,7 +93,7 @@ while True:
                 cv2.circle(display, (smooth_x, smooth_y), 5, (0, 0, 255), -1)
 
     # Combine the canvas with the camera feed
-    result = cv2.addWeighted(frame, 1, display, 0.5, 0)
+    result = cv2.addWeighted(frame, 0.2, display, 1, 0)
 
     # Show the result
     cv2.imshow('Hand Drawing', result)
