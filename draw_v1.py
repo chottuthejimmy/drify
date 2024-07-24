@@ -15,7 +15,7 @@ ret, frame = cap.read()
 frame_height, frame_width = frame.shape[:2]
 
 # Create a blank canvas
-canvas = np.zeros((frame_height, frame_width, 3), np.uint8)
+canvas = np.ones((frame_height, frame_width, 3), np.uint8) * 255
 
 # Previous coordinates of the index finger
 prev_x, prev_y = 0, 0
@@ -68,13 +68,16 @@ while True:
                     alpha = i / (interpolation_steps + 1)
                     interpx = int(prev_smooth_x * (1 - alpha) + smooth_x * alpha)
                     interpy = int(prev_smooth_y * (1 - alpha) + smooth_y * alpha)
-                    cv2.line(canvas, (prev_smooth_x, prev_smooth_y), (interpx, interpy), (255, 255, 255), 2)
+                    cv2.line(canvas, (prev_smooth_x, prev_smooth_y), (interpx, interpy), (0, 0, 0), 2)
                     prev_smooth_x, prev_smooth_y = interpx, interpy
             
             prev_smooth_x, prev_smooth_y = smooth_x, smooth_y
             
             # Draw just the index finger tip on the display as a small red circle
-            cv2.circle(display, (smooth_x, smooth_y), 5, (0, 0, 255), -1)
+            cv2.circle(display, (smooth_x, smooth_y), 7, (0, 0, 255), -1)
+            
+    if cv2.waitKey(1) & 0xFF == ord('w'):
+        canvas = np.ones((frame_height, frame_width, 3), np.uint8) * 255
     
     # Display the result
     cv2.imshow("Drawing Canvas", display)
