@@ -45,26 +45,26 @@ def show_flash_and_text(display, message="Screenshot saved!", duration=0.5):
     cv2.imshow('Hand Drawing', flash_screen)
     cv2.waitKey(1)  # Display the flash screen for a short moment
 
-# def is_spock(hand_landmarks):
-#     # Define landmarks
-#     thumb_tip = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP]
-#     index_tip = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP]
-#     middle_tip = hand_landmarks.landmark[mp_hands.HandLandmark.MIDDLE_FINGER_TIP]
-#     ring_tip = hand_landmarks.landmark[mp_hands.HandLandmark.RING_FINGER_TIP]
-#     pinky_tip = hand_landmarks.landmark[mp_hands.HandLandmark.PINKY_TIP]
+def is_spock(hand_landmarks):
+    # Define landmarks
+    thumb_tip = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP]
+    index_tip = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP]
+    middle_tip = hand_landmarks.landmark[mp_hands.HandLandmark.MIDDLE_FINGER_TIP]
+    ring_tip = hand_landmarks.landmark[mp_hands.HandLandmark.RING_FINGER_TIP]
+    pinky_tip = hand_landmarks.landmark[mp_hands.HandLandmark.PINKY_TIP]
 
-#     # Check for Spock sign: index finger and middle finger should be together and ring and pinky should be together, 
-#     # and the thumb should be raised. There should be a gap between the middle and ring fingers.
-#     #Euclidean distance between the middle and ring finger tips
-#     distance = np.sqrt((middle_tip.x - ring_tip.x) ** 2 + (middle_tip.y - ring_tip.y) ** 2)
-#     #Euclidean distance between the index and middle finger tips
-#     distance1 = np.sqrt((index_tip.x - middle_tip.x) ** 2 + (index_tip.y - middle_tip.y) ** 2)
-#     #Euclidean distance between the ring and pinky finger tips
-#     distance2 = np.sqrt((ring_tip.x - pinky_tip.x) ** 2 + (ring_tip.y - pinky_tip.y) ** 2)
+    # Check for Spock sign: index finger and middle finger should be together and ring and pinky should be together, 
+    # and the thumb should be raised. There should be a gap between the middle and ring fingers.
+    #Euclidean distance between the middle and ring finger tips
+    distance = np.sqrt((middle_tip.x - ring_tip.x) ** 2 + (middle_tip.y - ring_tip.y) ** 2)
+    #Euclidean distance between the index and middle finger tips
+    distance1 = np.sqrt((index_tip.x - middle_tip.x) ** 2 + (index_tip.y - middle_tip.y) ** 2)
+    #Euclidean distance between the ring and pinky finger tips
+    distance2 = np.sqrt((ring_tip.x - pinky_tip.x) ** 2 + (ring_tip.y - pinky_tip.y) ** 2)
     
-#     if distance > 0.05 and distance1 < 0.05 and distance2 < 0.05:
-#         return True
-#     return False
+    if distance > 0.05 and distance1 < 0.05 and distance2 < 0.05:
+        return True
+    return False
 
 while True:
     ret, frame = cap.read()
@@ -88,9 +88,9 @@ while True:
             if is_fist(hand_landmarks):
                 canvas = np.zeros((frame_height, frame_width, 3), np.uint8)
                 points = []
-            # elif is_spock(hand_landmarks):
-            #     show_flash_and_text(display, "Spock sign detected!")
-            #     cv2.imwrite('spock_canvas.png', canvas)
+            elif is_spock(hand_landmarks):
+                show_flash_and_text(display, "Spock sign detected!")
+                cv2.imwrite('spock_canvas.png', canvas)
             else:
                 # Get the coordinates of the index finger tip (Landmark 8)
                 index_finger = hand_landmarks.landmark[8]
@@ -123,7 +123,7 @@ while True:
                 cv2.circle(display, (smooth_x, smooth_y), 5, (0, 0, 255), -1)
 
     # Combine the canvas with the camera feed
-    result = cv2.addWeighted(frame, 0.2, display, 1, 0)
+    result = cv2.addWeighted(frame, 0.5, display, 1, 0)
 
     # Show the result
     cv2.imshow('Hand Drawing', result)
